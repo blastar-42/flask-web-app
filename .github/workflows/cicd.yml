@@ -1,0 +1,27 @@
+name: Deploy Flask App to Touge Server
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
+        run: |
+          pip install flask werkzeug
+          python -m pytest tests/
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 47.96.157.89
+          port: 53975
+          username: root
+          password: Pw2_U5gEgMeYGjYY
+          script: |
+            cd /root/flask-web-app
+            git pull origin main
+            pip3 install -r requirements.txt
+            supervisorctl restart flask-web-app
